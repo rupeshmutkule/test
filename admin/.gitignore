@@ -1,0 +1,32 @@
+# Environment Variables - NEVER push this
+.env
+.env.local
+.env.production
+.env.development
+
+# Dependencies - too large to push
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Runtime
+pids/
+*.pid
+
+# Build
+dist/
+build/
+
+# Editor
+.vscode/
+.idea/
+
+# Uploads (if any user uploaded files)
+public/uploads/
