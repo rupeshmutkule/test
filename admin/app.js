@@ -10,7 +10,20 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// ✅ Serve static files on BOTH paths (local + VPS)
+app.use('/store/admin/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/store/admin/js', express.static(path.join(__dirname, 'public/js')));
+app.use('/store/admin/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/store/admin/fonts', express.static(path.join(__dirname, 'public/fonts')));
+app.use('/store/admin/libs', express.static(path.join(__dirname, 'public/libs')));
+
+// ✅ Local paths working too
+app.use('/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
+app.use('/libs', express.static(path.join(__dirname, 'public/libs')));
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -18,9 +31,10 @@ app.use(session({
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
-// ✅ Set base path as global variable
+
+// ✅ basePath variable for EJS templates
 app.locals.basePath = process.env.BASE_PATH || '';
-// Routes
+
 const authRoutes  = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 
