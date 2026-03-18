@@ -143,7 +143,7 @@ export function ProductDetailsClient({ productId }: { productId?: string } = {})
   const displaySalePrice = currentSalePrice ?? simpleSalePrice ?? null;
   const showRange = !hasFullSelection && priceMax > priceMin;
   const priceRangeStr = priceMax > priceMin
-    ? `$${priceMin.toFixed(2)} � $${priceMax.toFixed(2)}`
+    ? `$${priceMin.toFixed(2)} - $${priceMax.toFixed(2)}`
     : `$${priceMin.toFixed(2)}`;
 
   const isAddToCartEnabled = !product.variations.length || hasFullSelection;
@@ -634,6 +634,7 @@ const baseCss = `
 
 .cpd-thumbs-strip {
   display: flex; flex-direction: column; gap: 9px; width: 74px; flex-shrink: 0;
+  min-width: 0;
 }
 .cpd-thumb {
   width: 74px; height: 74px;
@@ -899,7 +900,7 @@ const baseCss = `
 .cpd-sticky-thumb { width:40px; height:40px; object-fit:cover; border-radius:6px; flex-shrink:0; }
 .cpd-sticky-name {
   font-family: var(--font-head); font-size: 15px; font-weight: 600;
-  color: var(--cpd-text); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  color: var(--cpd-text); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .cpd-sticky-price { font-family: var(--font-head); font-size: 16px; font-weight:700; color: var(--cpd-text); }
 .cpd-sticky-atc {
@@ -981,18 +982,50 @@ const baseCss = `
 /* Responsive */
 @media (max-width: 900px) {
   .cpd-wrap { grid-template-columns:1fr; gap:24px; padding:20px 20px 40px; }
-  .cpd-gallery-col { position:static; }
-  .cpd-thumbs-strip { flex-direction:row; width:auto; flex-wrap:nowrap; overflow-x:auto; }
-  .cpd-thumb { width:60px; height:60px; }
+
+  /* Gallery: stack thumbs above main image */
+  .cpd-gallery-col { position:static; flex-direction:column; }
+  .cpd-thumbs-strip {
+    flex-direction:row; width:100%; flex-wrap:nowrap;
+    overflow-x:auto; gap:8px;
+    /* hide scrollbar but keep scrollability */
+    scrollbar-width:none;
+  }
+  .cpd-thumbs-strip::-webkit-scrollbar { display:none; }
+  .cpd-thumb { width:60px; height:60px; flex-shrink:0; }
+
+  /* Main image: cap height so it doesn't dominate the viewport */
+  .cpd-main-img-wrap { max-height:420px; }
+
   .cpd-img-arrow { display:flex; }
   .cpd-img-dots { display:flex; }
   .cpd-breadcrumb, .cpd-tabs-section { padding-left:20px; padding-right:20px; }
+
+  /* Sticky bar: hide name on tablet to prevent overflow */
   .cpd-sticky-bar { padding:10px 20px; gap:10px; }
+  .cpd-sticky-name { max-width:200px; }
   .cpd-trust-badge { min-width:80px; }
 }
-@media (max-width: 480px) {
+
+@media (max-width: 600px) {
+  /* Cart row wraps earlier on mid-size phones */
   .cpd-cart-row { flex-wrap:wrap; }
-  .cpd-atc-btn { flex:100%; }
+  .cpd-atc-btn { flex:1; min-width:0; }
+
+  /* Sticky bar: hide name entirely on small phones */
+  .cpd-sticky-name { display:none; }
+  .cpd-sticky-bar { gap:8px; }
+}
+
+@media (max-width: 480px) {
+  /* ATC takes full width, qty + wishlist share a row */
+  .cpd-atc-btn { flex:100%; order:2; }
+  .cpd-qty-wrap { flex:1; }
+  .cpd-wishlist-btn { flex-shrink:0; }
+
+  /* Tighter main image on small phones */
+  .cpd-main-img-wrap { max-height:320px; }
+  .cpd-thumb { width:52px; height:52px; }
 }
 @keyframes cpdSpin { to { transform:rotate(360deg); } }
 `;

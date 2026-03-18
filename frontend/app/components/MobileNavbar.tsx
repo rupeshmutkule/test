@@ -23,21 +23,14 @@ export default function MobileNavbar() {
   const { count } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const [activeNestedSubmenu, setActiveNestedSubmenu] = useState<string | null>(null);
 
   const closeMenu = () => {
     setMobileMenuOpen(false);
     setActiveSubmenu(null);
-    setActiveNestedSubmenu(null);
   };
 
   const toggleSubmenu = (name: string) => {
     setActiveSubmenu((prev) => (prev === name ? null : name));
-    setActiveNestedSubmenu(null);
-  };
-
-  const toggleNested = (name: string) => {
-    setActiveNestedSubmenu((prev) => (prev === name ? null : name));
   };
 
   useEffect(() => {
@@ -108,9 +101,16 @@ export default function MobileNavbar() {
 
   return (
     <>
-      {/* ══ MOBILE HEADER ══ */}
+      {/* Inject breakpoint CSS — hides mobile nav above 989px to match .desk-nav */}
+      <style>{`
+        .mobile-nav-wrapper { display: block; }
+        @media only screen and (min-width: 990px) {
+          .mobile-nav-wrapper { display: none !important; }
+        }
+      `}</style>
+      {/* ══ MOBILE HEADER ══ — visible below 989px to match .desk-nav CSS breakpoint */}
       <div
-        className="md:hidden"
+        className="mobile-nav-wrapper"
         style={{
           position: "fixed",
           top: 0,
@@ -217,7 +217,7 @@ export default function MobileNavbar() {
       {/* ══ MENU OVERLAY ══ */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden"
+          className="mobile-nav-wrapper"
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 490 }}
           onClick={closeMenu}
         />
@@ -225,7 +225,7 @@ export default function MobileNavbar() {
 
       {/* ══ FULL-WIDTH DROPDOWN MENU ══ */}
       <div
-        className="md:hidden"
+        className="mobile-nav-wrapper"
         style={{
           display: mobileMenuOpen ? "block" : "none",
           position: "fixed",
@@ -386,8 +386,8 @@ export default function MobileNavbar() {
         </nav>
       </div>
 
-      {/* Spacer */}
-      <div className="md:hidden" style={{ height: "70px" }} />
+      {/* Spacer so page content doesn't sit under the fixed mobile header */}
+      <div className="mobile-nav-wrapper" style={{ height: "70px" }} />
     </>
   );
 }

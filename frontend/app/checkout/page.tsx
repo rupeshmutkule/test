@@ -70,7 +70,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (!validate()) return;
     setPlacing(true);
-    setTimeout(() => { clearCart(); router.push('/store/checkout/success'); }, 1200);
+    setTimeout(() => { clearCart(); router.push('/checkout/success'); }, 1200);
   };
 
   const orderTotal = total;
@@ -80,7 +80,7 @@ export default function CheckoutPage() {
       <Header />
       <div className="dima-main" style={{ textAlign: 'center', padding: '80px 20px' }}>
         <p style={{ fontSize: 18, marginBottom: 20 }}>Your cart is empty.</p>
-        <Link href="/store/shop" className="button fill uppercase">Go to Shop</Link>
+        <Link href="/shop" className="button fill uppercase">Go to Shop</Link>
       </div>
       <Footer />
     </>

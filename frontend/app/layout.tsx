@@ -4,8 +4,23 @@ import { CartProvider } from "./lib/cartContext";
 import { WishlistProvider } from "./lib/wishlistContext";
 
 export const metadata: Metadata = {
-  title: "SHOP DEMO",
-  description: "E-commerce shop",
+  title: {
+    default: 'e-commerce store',
+    template: '%s | All in one e-commerce store & customization platform ',
+  },
+  description:
+    'e-commerce store for every  — hoodies, tumblers, mugs, decals, koozies and more.',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001'
+  ),
+  openGraph: {
+    siteName: 'e-commerce store',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
