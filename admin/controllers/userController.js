@@ -21,6 +21,7 @@ const saveMeta = async (userId, body) => {
     "dob",
     "gender",
     "description",
+    // Billing address
     "billing_address_1",
     "billing_address_2",
     "billing_city",
@@ -28,9 +29,14 @@ const saveMeta = async (userId, body) => {
     "billing_postcode",
     "billing_country",
     "billing_phone",
-    "social_instagram",
-    "social_facebook",
-    "social_twitter",
+    // Shipping address
+    "shipping_address_1",
+    "shipping_address_2",
+    "shipping_city",
+    "shipping_state",
+    "shipping_postcode",
+    "shipping_country",
+    "shipping_phone",
   ];
 
   for (const key of metaFields) {

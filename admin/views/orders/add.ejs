@@ -1,0 +1,851 @@
+<%- include('../partials/head') %>
+  <%- include('../partials/navbar') %>
+    <%- include('../partials/sidebar') %>
+
+      <div class="page-wrapper">
+
+        <div class="page-breadcrumb">
+          <div class="row">
+            <div class="col-7 align-self-center">
+              <h4 class="page-title">Add Order</h4>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/store/admin/dashboard">Home</a></li>
+                  <li class="breadcrumb-item"><a href="/store/admin/orders">Orders</a></li>
+                  <li class="breadcrumb-item active">Add Order</li>
+                </ol>
+              </nav>
+            </div>
+            <div class="col-5 align-self-center text-end">
+              <a href="/store/admin/orders" class="btn btn-secondary rounded-pill px-4">
+                <div class="d-flex align-items-center gap-1">
+                  <i data-feather="arrow-left" class="feather-sm"></i> Back
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-fluid">
+
+          <% if (locals.errors) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <i data-feather="alert-circle" class="feather-sm me-1"></i>
+              <%= locals.errors %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <% } %>
+
+              <form action="/store/admin/orders/store" method="POST" id="orderForm">
+                <input type="hidden" name="customer_id" id="selectedCustomerId" value="0" />
+
+                <div class="row">
+
+                  <!-- ══ LEFT COLUMN ══ -->
+                  <div class="col-lg-8">
+
+                    <!-- Customer Select -->
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3 pb-2 border-bottom">
+                          <i data-feather="user" class="feather-sm me-2"></i>Customer
+                        </h5>
+
+                        <!-- Searchable customer picker -->
+                        <div class="mb-3 position-relative">
+                          <label class="form-label fw-semibold">
+                            Select Customer <span class="text-danger">*</span>
+                          </label>
+
+                          <!-- Search input -->
+                          <div class="input-group">
+                            <span class="input-group-text bg-white">
+                              <i data-feather="search" style="width:15px;height:15px;" class="text-muted"></i>
+                            </span>
+                            <input type="text" id="customerSearchInput" class="form-control"
+                              placeholder="Search by name or email..." autocomplete="off" />
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearCustomer()"
+                              id="clearCustomerBtn" style="display:none;">
+                              <i data-feather="x" style="width:14px;height:14px;"></i>
+                            </button>
+                          </div>
+
+                          <!-- Dropdown list -->
+                          <div id="customerDropdown" class="border rounded bg-white shadow-sm position-absolute w-100"
+                            style="display:none; z-index:1000; max-height:260px; overflow-y:auto; top:100%; left:0;">
+
+
+                            <% customers.forEach(function(c) { %>
+                              <div class="customer-option px-3 py-2 d-flex align-items-center gap-2"
+                                style="cursor:pointer;" data-id="<%= c.ID %>" data-name="<%= c.display_name %>"
+                                data-email="<%= c.user_email %>"
+                                data-first="<%= c.first_name  || c.display_name.split(' ')[0] || '' %>"
+                                data-last="<%= c.last_name   || c.display_name.split(' ')[1] || '' %>"
+                                data-phone="<%= c.phone || '' %>" data-addr1="<%= c.billing_address_1 || '' %>"
+                                data-addr2="<%= c.billing_address_2 || '' %>" data-city="<%= c.billing_city    || '' %>"
+                                data-state="<%= c.billing_state  || '' %>"
+                                data-postcode="<%= c.billing_postcode || '' %>"
+                                data-country="<%= c.billing_country  || 'India' %>"
+                                data-bphone="<%= c.billing_phone || c.phone || '' %>"
+                                data-saddr1="<%= c.shipping_address_1 || c.billing_address_1 || '' %>"
+                                data-saddr2="<%= c.shipping_address_2 || c.billing_address_2 || '' %>"
+                                data-scity="<%= c.shipping_city    || c.billing_city    || '' %>"
+                                data-sstate="<%= c.shipping_state  || c.billing_state   || '' %>"
+                                data-spostcode="<%= c.shipping_postcode || c.billing_postcode || '' %>"
+                                data-scountry="<%= c.shipping_country  || c.billing_country  || 'India' %>"
+                                data-sphone="<%= c.shipping_phone || c.billing_phone || c.phone || '' %>"
+                                onmouseover="this.style.background='#f8f9ff'" onmouseout="this.style.background=''"
+                                onclick="selectCustomer(this)">
+                                <div
+                                  class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0"
+                                  style="width:32px;height:32px;font-size:13px;font-weight:700;">
+                                  <%= c.display_name.charAt(0).toUpperCase() %>
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                  <div class="small fw-semibold text-truncate">
+                                    <%= c.display_name %>
+                                  </div>
+                                  <small class="text-muted text-truncate d-block">
+                                    <%= c.user_email %>
+                                  </small>
+                                </div>
+                              </div>
+                              <% }) %>
+
+                                <% if (customers.length===0) { %>
+                                  <div class="px-3 py-3 text-muted small text-center">No customers found</div>
+                                  <% } %>
+                          </div>
+                          <div id="customerNoResult"
+                            class="px-3 py-4 flex-column align-items-center justify-content-center text-muted"
+                            style="display:none;">
+                            <i data-feather="user-x" style="width:28px;height:28px;" class="mb-2"></i>
+                            <div class="small fw-semibold">No customers found</div>
+                            <small>Try a different name or email</small>
+                          </div>
+                        </div>
+
+                        <!-- Selected customer info badge -->
+                        <div id="selectedCustomerBadge" style="display:none;"
+                          class="d-flex align-items-center gap-3 p-3 border rounded bg-light">
+                          <div
+                            class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0"
+                            style="width:40px;height:40px;font-size:16px;font-weight:700;" id="customerAvatar">?</div>
+                          <div class="flex-grow-1">
+                            <div class="fw-semibold" id="customerBadgeName">—</div>
+                            <small class="text-muted" id="customerBadgeEmail">—</small>
+                          </div>
+                          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill"
+                            onclick="clearCustomer()">Change</button>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <h5
+                          class="card-title mb-3 pb-2 border-bottom d-flex justify-content-between align-items-center">
+                          <span><i data-feather="shopping-bag" class="feather-sm me-2"></i>Order Items</span>
+                          <button type="button" class="btn btn-sm btn-primary rounded-pill"
+                            onclick="showAddProductModal()">
+                            <i data-feather="plus" class="feather-sm me-1"></i> Add Product
+                          </button>
+                        </h5>
+
+                        <div id="orderItemsList">
+                          <div id="emptyItemsMsg" class="text-center py-4 text-muted">
+                            <i data-feather="package" style="width:32px;height:32px;" class="d-block mx-auto mb-2"></i>
+                            No items added yet. Click "Add Product" to start.
+                          </div>
+                        </div>
+
+                        <!-- Totals -->
+                        <div class="border-top pt-3 mt-2" id="totalsSection" style="display:none;">
+                          <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Subtotal</span>
+                            <span id="subtotalDisplay">₹0.00</span>
+                          </div>
+                          <div class="d-flex justify-content-between small mb-1 align-items-center">
+                            <span class="text-muted">Shipping</span>
+                            <div class="d-flex align-items-center gap-2">
+                              <span>₹</span>
+                              <input type="number" name="shipping_cost" id="shippingCost"
+                                class="form-control form-control-sm" value="0" min="0" step="0.01" style="width:90px;"
+                                oninput="recalcTotal()" />
+                            </div>
+                          </div>
+                          <div class="d-flex justify-content-between small mb-1 align-items-center">
+                            <span class="text-muted">Discount</span>
+                            <div class="d-flex align-items-center gap-2">
+                              <span>₹</span>
+                              <input type="number" name="discount_total" id="discountTotal"
+                                class="form-control form-control-sm" value="0" min="0" step="0.01" style="width:90px;"
+                                oninput="recalcTotal()" />
+                            </div>
+                          </div>
+                          <div class="d-flex justify-content-between fw-bold mt-2 pt-2 border-top">
+                            <span>Total</span>
+                            <span class="fs-5" id="totalDisplay">₹0.00</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Billing Address -->
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3 pb-2 border-bottom">
+                          <i data-feather="map-pin" class="feather-sm me-2"></i>Billing Address
+                        </h5>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">First Name</label>
+                              <input type="text" name="billing_first_name" id="billingFirstName"
+                                class="form-control form-control-sm" placeholder="First name" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Last Name</label>
+                              <input type="text" name="billing_last_name" id="billingLastName"
+                                class="form-control form-control-sm" placeholder="Last name" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Email</label>
+                              <input type="email" name="billing_email" id="billingEmail"
+                                class="form-control form-control-sm" placeholder="email@example.com" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Phone</label>
+                              <input type="tel" name="billing_phone" id="billingPhone"
+                                class="form-control form-control-sm" placeholder="Phone number" />
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Address Line 1</label>
+                              <input type="text" name="billing_address_1" id="billingAddr1"
+                                class="form-control form-control-sm" placeholder="Street address" />
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Address Line 2</label>
+                              <input type="text" name="billing_address_2" id="billingAddr2"
+                                class="form-control form-control-sm" placeholder="Area, landmark (optional)" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">City</label>
+                              <input type="text" name="billing_city" id="billingCity"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">State</label>
+                              <input type="text" name="billing_state" id="billingState"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Postcode</label>
+                              <input type="text" name="billing_postcode" id="billingPostcode"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Country</label>
+                              <input type="text" name="billing_country" id="billingCountry"
+                                class="form-control form-control-sm" value="India" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-check mt-1">
+                          <input class="form-check-input" type="checkbox" id="copyToShipping" checked
+                            onchange="toggleShipping(this.checked)" />
+                          <label class="form-check-label small" for="copyToShipping">
+                            Shipping address same as billing
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="card mb-3" id="shippingCard" style="display:none;">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3 pb-2 border-bottom">
+                          <i data-feather="truck" class="feather-sm me-2"></i>Shipping Address
+                        </h5>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">First Name</label>
+                              <input type="text" name="shipping_first_name" id="shippingFirstName"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Last Name</label>
+                              <input type="text" name="shipping_last_name" id="shippingLastName"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Phone</label>
+                              <input type="tel" name="shipping_phone" id="shippingPhone"
+                                class="form-control form-control-sm" placeholder="Shipping contact number" />
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Address Line 1</label>
+                              <input type="text" name="shipping_address_1" id="shippingAddr1"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Address Line 2</label>
+                              <input type="text" name="shipping_address_2" id="shippingAddr2"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">City</label>
+                              <input type="text" name="shipping_city" id="shippingCity"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">State</label>
+                              <input type="text" name="shipping_state" id="shippingState"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Postcode</label>
+                              <input type="text" name="shipping_postcode" id="shippingPostcode"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold small">Country</label>
+                              <input type="text" name="shipping_country" id="shippingCountry"
+                                class="form-control form-control-sm" value="India" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Customer Note -->
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3 pb-2 border-bottom">
+                          <i data-feather="message-square" class="feather-sm me-2"></i>Customer Note
+                        </h5>
+                        <textarea name="customer_note" class="form-control" rows="3"
+                          placeholder="Optional note from the customer about the order..."></textarea>
+                      </div>
+                    </div>
+
+                  </div><!-- /col-lg-8 -->
+
+                  <!-- ══ RIGHT COLUMN ══ -->
+                  <div class="col-lg-4">
+
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <h5 class="card-title mb-3 pb-2 border-bottom">Order Details</h5>
+
+                        <div class="mb-3">
+                          <label class="form-label fw-semibold small">Order Status</label>
+                          <select name="order_status" class="form-select form-select-sm">
+                            <option value="wc-pending">Pending Payment</option>
+                            <option value="wc-processing" selected>Processing</option>
+                            <option value="wc-on-hold">On Hold</option>
+                            <option value="wc-completed">Completed</option>
+                            <option value="wc-cancelled">Cancelled</option>
+                          </select>
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label fw-semibold small">Payment Method</label>
+                          <select name="payment_method" id="paymentMethod" class="form-select form-select-sm"
+                            onchange="updatePaymentTitle(this)">
+                            <option value="cod" data-title="Cash on delivery">Cash on Delivery</option>
+                            <option value="bacs" data-title="Direct bank transfer">Bank Transfer</option>
+                            <option value="cheque" data-title="Check payments">Cheque</option>
+                            <option value="razorpay" data-title="Razorpay">Razorpay</option>
+                            <option value="stripe" data-title="Credit Card (Stripe)">Stripe</option>
+                            <option value="paypal" data-title="PayPal">PayPal</option>
+                            <option value="free" data-title="Free order">Free</option>
+                            <option value="other" data-title="Other">Other</option>
+                          </select>
+                          <input type="hidden" name="payment_method_title" id="paymentMethodTitle"
+                            value="Cash on delivery" />
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label fw-semibold small">Shipping Method</label>
+                          <input type="text" name="shipping_method_title" class="form-control form-control-sm"
+                            value="Standard Ground" placeholder="e.g. Standard Ground" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <div class="d-grid gap-2">
+                          <button type="submit" class="btn btn-primary rounded-pill" onclick="return validateOrder()">
+                            <div class="d-flex align-items-center justify-content-center gap-1">
+                              <i data-feather="save" class="feather-sm"></i> Create Order
+                            </div>
+                          </button>
+                          <a href="/store/admin/orders" class="btn btn-outline-secondary rounded-pill text-center">
+                            Cancel
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div><!-- /col-lg-4 -->
+                </div><!-- /row -->
+              </form>
+        </div>
+      </div>
+
+      <!-- ══ ADD PRODUCT MODAL ══ -->
+      <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add Product to Order</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <input type="text" id="productSearch" class="form-control" placeholder="Search product by name..."
+                  oninput="filterProducts(this.value)" />
+              </div>
+              <div id="productListContainer" style="max-height:320px;overflow-y:auto;">
+                <% products.forEach(function(prod) { %>
+                  <div class="product-row d-flex align-items-center gap-3 p-2 border rounded mb-2"
+                    style="cursor:pointer;" data-name="<%= prod.product_title.toLowerCase() %>" data-id="<%= prod.ID %>"
+                    data-title="<%= prod.product_title %>" data-price="<%= prod.price || 0 %>"
+                    data-type="<%= prod.product_type %>" onmouseover="this.style.background='#f8f9ff'"
+                    onmouseout="this.style.background=''" onclick="selectProduct(this)">
+                    <div class="flex-grow-1">
+                      <div class="fw-semibold small">
+                        <%= prod.product_title %>
+                      </div>
+                      <small class="text-muted">
+                        SKU: <%= prod.sku || 'N/A' %> |
+                          ₹<%= parseFloat(prod.price || 0).toFixed(2) %> |
+                            <span class="badge bg-light text-dark border" style="font-size:10px;">
+                              <%= prod.product_type==='product_variation' ? 'Variable' : 'Simple' %>
+                            </span>
+                      </small>
+                    </div>
+                    <i data-feather="plus-circle" class="text-primary" style="width:18px;height:18px;"></i>
+                  </div>
+                  <% }) %>
+              </div>
+
+              <div id="variationSection" style="display:none;" class="mt-3 p-3 border rounded bg-light">
+                <label class="form-label fw-semibold small">Select Variation</label>
+                <select id="variationSelect" class="form-select form-select-sm mb-2" onchange="onVariationChange(this)">
+                  <option value="">— Select variation —</option>
+                </select>
+              </div>
+
+              <div id="addItemForm" style="display:none;" class="mt-3 border-top pt-3">
+                <div class="row g-2 align-items-end">
+                  <div class="col-5">
+                    <label class="form-label fw-semibold small">Product</label>
+                    <input type="text" id="selectedProductName" class="form-control form-control-sm" readonly />
+                  </div>
+                  <div class="col-3">
+                    <label class="form-label fw-semibold small">Price (₹)</label>
+                    <input type="number" id="selectedProductPrice" class="form-control form-control-sm" min="0"
+                      step="0.01" oninput="updateModalTotal()" />
+                  </div>
+                  <div class="col-2">
+                    <label class="form-label fw-semibold small">Qty</label>
+                    <input type="number" id="selectedProductQty" class="form-control form-control-sm" value="1" min="1"
+                      oninput="updateModalTotal()" />
+                  </div>
+                  <div class="col-2">
+                    <label class="form-label fw-semibold small">Total</label>
+                    <div class="fw-semibold small pt-1" id="modalLineTotal">₹0.00</div>
+                  </div>
+                </div>
+              </div>
+
+              <input type="hidden" id="selectedProductId" value="" />
+              <input type="hidden" id="selectedVariationId" value="0" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary rounded-pill" onclick="addItemToOrder()">
+                <i data-feather="plus" class="feather-sm me-1"></i> Add to Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        var orderItems = [];
+        var itemCounter = 0;
+
+        // ═══════════════════════════════════════════════════════
+        // CUSTOMER SEARCH
+        // ═══════════════════════════════════════════════════════
+        var searchInput = document.getElementById('customerSearchInput');
+        var dropdown = document.getElementById('customerDropdown');
+        var noResultEl = document.getElementById('customerNoResult');
+        var allOptions = Array.from(document.querySelectorAll('.customer-option'));
+
+        // Show top 10 on focus
+        searchInput.addEventListener('focus', function () {
+          showTopCustomers();
+          dropdown.style.display = 'block';
+        });
+
+        // Filter on type
+        searchInput.addEventListener('input', function () {
+          var q = this.value.trim().toLowerCase();
+
+          if (!q) {
+            showTopCustomers();
+            dropdown.style.display = 'block';
+            return;
+          }
+
+          var hasMatch = false;
+          allOptions.forEach(function (row) {
+            var name = (row.dataset.name || '').toLowerCase();
+            var email = (row.dataset.email || '').toLowerCase();
+            var match = name.includes(q) || email.includes(q);
+            row.style.display = match ? '' : 'none';
+            if (match) hasMatch = true;
+          });
+
+          if (hasMatch) {
+            noResultEl.style.display = 'none';
+          } else {
+            noResultEl.style.display = 'flex';
+            noResultEl.style.removeProperty('display'); // remove inline none
+            noResultEl.style.display = 'flex';
+          }
+          dropdown.style.display = 'block';
+        });
+
+        // Show first 10, hide rest
+        function showTopCustomers() {
+          noResultEl.style.display = 'none';
+          var shown = 0;
+          allOptions.forEach(function (row) {
+            if (shown < 10) {
+              row.style.display = '';
+              shown++;
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        }
+
+        // Close on outside click
+        document.addEventListener('click', function (e) {
+          if (!e.target.closest('#customerSearchInput') &&
+            !e.target.closest('#customerDropdown') &&
+            !e.target.closest('#clearCustomerBtn')) {
+            dropdown.style.display = 'none';
+          }
+        });
+
+
+
+        function selectCustomer(row) {
+          var id = row.dataset.id;
+          var name = row.dataset.name;
+          var email = row.dataset.email;
+
+          // Set hidden customer_id
+          document.getElementById('selectedCustomerId').value = id;
+
+          // Show badge, hide search
+          document.getElementById('customerSearchInput').value = '';
+          document.getElementById('customerDropdown').style.display = 'none';
+          document.getElementById('selectedCustomerBadge').style.display = 'flex';
+          document.getElementById('customerAvatar').textContent = name.charAt(0).toUpperCase();
+          document.getElementById('customerBadgeName').textContent = name;
+          document.getElementById('customerBadgeEmail').textContent = email || 'Guest';
+          document.getElementById('clearCustomerBtn').style.display = 'inline-flex';
+
+          // Fill billing fields
+          document.getElementById('billingFirstName').value = row.dataset.first || '';
+          document.getElementById('billingLastName').value = row.dataset.last || '';
+          document.getElementById('billingEmail').value = row.dataset.email || '';
+          document.getElementById('billingPhone').value = row.dataset.bphone || row.dataset.phone || '';
+          document.getElementById('billingAddr1').value = row.dataset.addr1 || '';
+          document.getElementById('billingAddr2').value = row.dataset.addr2 || '';
+          document.getElementById('billingCity').value = row.dataset.city || '';
+          document.getElementById('billingState').value = row.dataset.state || '';
+          document.getElementById('billingPostcode').value = row.dataset.postcode || '';
+          document.getElementById('billingCountry').value = row.dataset.country || 'India';
+
+          // Fill shipping fields (from customer shipping meta, fallback to billing)
+          document.getElementById('shippingFirstName').value = row.dataset.first || '';
+          document.getElementById('shippingLastName').value = row.dataset.last || '';
+          document.getElementById('shippingPhone').value = row.dataset.sphone || row.dataset.bphone || '';
+          document.getElementById('shippingAddr1').value = row.dataset.saddr1 || row.dataset.addr1 || '';
+          document.getElementById('shippingAddr2').value = row.dataset.saddr2 || row.dataset.addr2 || '';
+          document.getElementById('shippingCity').value = row.dataset.scity || row.dataset.city || '';
+          document.getElementById('shippingState').value = row.dataset.sstate || row.dataset.state || '';
+          document.getElementById('shippingPostcode').value = row.dataset.spostcode || row.dataset.postcode || '';
+          document.getElementById('shippingCountry').value = row.dataset.scountry || row.dataset.country || 'India';
+        }
+
+        function clearCustomer() {
+          document.getElementById('selectedCustomerId').value = '0';
+          document.getElementById('selectedCustomerBadge').style.display = 'none';
+          document.getElementById('clearCustomerBtn').style.display = 'none';
+          document.getElementById('customerSearchInput').value = '';
+          clearBillingShipping();
+        }
+
+        function clearBillingShipping() {
+          ['billingFirstName', 'billingLastName', 'billingEmail', 'billingPhone',
+            'billingAddr1', 'billingAddr2', 'billingCity', 'billingState', 'billingPostcode'].forEach(function (id) {
+              var el = document.getElementById(id);
+              if (el) el.value = '';
+            });
+          document.getElementById('billingCountry').value = 'India';
+
+          ['shippingFirstName', 'shippingLastName', 'shippingPhone',
+            'shippingAddr1', 'shippingAddr2', 'shippingCity', 'shippingState', 'shippingPostcode'].forEach(function (id) {
+              var el = document.getElementById(id);
+              if (el) el.value = '';
+            });
+          document.getElementById('shippingCountry').value = 'India';
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', function (e) {
+          if (!e.target.closest('#customerSearchInput') && !e.target.closest('#customerDropdown')) {
+            document.getElementById('customerDropdown').style.display = 'none';
+          }
+        });
+
+        // ═══════════════════════════════════════════════════════
+        // SHIPPING TOGGLE
+        // ═══════════════════════════════════════════════════════
+        function toggleShipping(sameAsBilling) {
+          document.getElementById('shippingCard').style.display = sameAsBilling ? 'none' : 'block';
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // PAYMENT METHOD
+        // ═══════════════════════════════════════════════════════
+        function updatePaymentTitle(sel) {
+          var opt = sel.options[sel.selectedIndex];
+          document.getElementById('paymentMethodTitle').value = opt.dataset.title || opt.text;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // PRODUCT MODAL
+        // ═══════════════════════════════════════════════════════
+        function showAddProductModal() {
+          document.getElementById('productSearch').value = '';
+          document.getElementById('addItemForm').style.display = 'none';
+          document.getElementById('variationSection').style.display = 'none';
+          document.getElementById('selectedProductId').value = '';
+          document.getElementById('selectedVariationId').value = '0';
+          filterProducts('');
+          feather.replace();
+          new bootstrap.Modal(document.getElementById('addProductModal')).show();
+        }
+
+        function filterProducts(q) {
+          q = q.toLowerCase();
+          document.querySelectorAll('.product-row').forEach(function (row) {
+            row.style.display = row.dataset.name.includes(q) ? '' : 'none';
+          });
+        }
+
+        function selectProduct(row) {
+          document.querySelectorAll('.product-row').forEach(function (r) {
+            r.style.background = '';
+            r.style.border = '1px solid #dee2e6';
+          });
+          row.style.background = '#e8f0fe';
+          row.style.border = '1px solid #2962FF';
+
+          var productId = row.dataset.id;
+          var productTitle = row.dataset.title;
+          var productPrice = row.dataset.price;
+          var productType = row.dataset.type;
+
+          document.getElementById('selectedProductId').value = productId;
+          document.getElementById('selectedVariationId').value = '0';
+
+          fetch('/store/admin/api/product-variations/' + productId)
+            .then(function (r) { return r.json(); })
+            .then(function (variations) {
+              if (variations && variations.length > 0) {
+                var sel = document.getElementById('variationSelect');
+                sel.innerHTML = '<option value="">— Select variation —</option>';
+                variations.forEach(function (v) {
+                  sel.innerHTML += '<option value="' + v.ID + '" data-price="' + (v.price || v.regular_price || 0) + '">' +
+                    v.label + ' — ₹' + parseFloat(v.price || v.regular_price || 0).toFixed(2) + '</option>';
+                });
+                document.getElementById('variationSection').style.display = 'block';
+                document.getElementById('addItemForm').style.display = 'none';
+                feather.replace();
+              } else {
+                document.getElementById('variationSection').style.display = 'none';
+                showAddItemForm(productTitle, parseFloat(productPrice || 0), productId, 0);
+              }
+            });
+        }
+
+        function onVariationChange(sel) {
+          if (!sel.value) {
+            document.getElementById('addItemForm').style.display = 'none';
+            return;
+          }
+          var opt = sel.options[sel.selectedIndex];
+          var price = parseFloat(opt.dataset.price || 0);
+          var selected = document.querySelector('.product-row[style*="border: 1px solid rgb(41, 98, 255)"]');
+          var title = selected ? selected.dataset.title : 'Product';
+          var varLabel = opt.text.split(' — ')[0];
+
+          document.getElementById('selectedVariationId').value = sel.value;
+          showAddItemForm(title + ' - ' + varLabel, price,
+            document.getElementById('selectedProductId').value, sel.value);
+        }
+
+        function showAddItemForm(name, price, productId, variationId) {
+          document.getElementById('selectedProductName').value = name;
+          document.getElementById('selectedProductPrice').value = price.toFixed(2);
+          document.getElementById('selectedProductQty').value = 1;
+          document.getElementById('addItemForm').style.display = 'block';
+          updateModalTotal();
+          feather.replace();
+        }
+
+        function updateModalTotal() {
+          var price = parseFloat(document.getElementById('selectedProductPrice').value || 0);
+          var qty = parseInt(document.getElementById('selectedProductQty').value || 1);
+          document.getElementById('modalLineTotal').textContent = '₹' + (price * qty).toFixed(2);
+        }
+
+        function addItemToOrder() {
+          var name = document.getElementById('selectedProductName').value;
+          var price = parseFloat(document.getElementById('selectedProductPrice').value || 0);
+          var qty = parseInt(document.getElementById('selectedProductQty').value || 1);
+          var productId = document.getElementById('selectedProductId').value;
+          var variationId = document.getElementById('selectedVariationId').value || '0';
+
+          if (!name || !productId) { alert('Please select a product first.'); return; }
+
+          orderItems.push({
+            idx: itemCounter++, name, price, qty, productId, variationId,
+            lineTotal: (price * qty).toFixed(2)
+          });
+          renderItems();
+          bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+        }
+
+        function renderItems() {
+          var container = document.getElementById('orderItemsList');
+          var emptyMsg = document.getElementById('emptyItemsMsg');
+          var totals = document.getElementById('totalsSection');
+
+          if (orderItems.length === 0) {
+            container.innerHTML = '';
+            container.appendChild(emptyMsg);
+            emptyMsg.style.display = 'block';
+            totals.style.display = 'none';
+            return;
+          }
+
+          emptyMsg.style.display = 'none';
+          totals.style.display = 'block';
+
+          var html = '';
+          orderItems.forEach(function (item, i) {
+            html +=
+              '<div class="d-flex align-items-center gap-3 py-2 border-bottom">' +
+              '<div class="flex-grow-1">' +
+              '<div class="fw-semibold small">' + item.name + '</div>' +
+              '<small class="text-muted">₹' + parseFloat(item.price).toFixed(2) + ' × ' + item.qty + '</small>' +
+              '<input type="hidden" name="item_product_id[]"   value="' + item.productId + '" />' +
+              '<input type="hidden" name="item_variation_id[]" value="' + item.variationId + '" />' +
+              '<input type="hidden" name="item_name[]"         value="' + item.name + '" />' +
+              '<input type="hidden" name="item_price[]"        value="' + item.price + '" />' +
+              '<input type="hidden" name="item_qty[]"          value="' + item.qty + '" />' +
+              '</div>' +
+              '<div class="text-end">' +
+              '<div class="fw-semibold small">₹' + item.lineTotal + '</div>' +
+              '<button type="button" class="btn btn-sm btn-outline-danger rounded-pill mt-1"' +
+              ' onclick="removeItem(' + i + ')" style="padding:1px 8px;font-size:11px;">Remove</button>' +
+              '</div>' +
+              '</div>';
+          });
+          container.innerHTML = html;
+          recalcTotal();
+        }
+
+        function removeItem(index) {
+          orderItems.splice(index, 1);
+          renderItems();
+        }
+
+        function recalcTotal() {
+          var subtotal = orderItems.reduce(function (sum, item) {
+            return sum + (parseFloat(item.price) * item.qty);
+          }, 0);
+          var shipping = parseFloat(document.getElementById('shippingCost').value || 0);
+          var discount = parseFloat(document.getElementById('discountTotal').value || 0);
+          var total = subtotal + shipping - discount;
+          document.getElementById('subtotalDisplay').textContent = '₹' + subtotal.toFixed(2);
+          document.getElementById('totalDisplay').textContent = '₹' + Math.max(0, total).toFixed(2);
+        }
+
+        function validateOrder() {
+          if (orderItems.length === 0) {
+            alert('Please add at least one product to the order.');
+            return false;
+          }
+          if (!document.getElementById('billingEmail').value) {
+            alert('Please enter a billing email address.');
+            return false;
+          }
+          return true;
+        }
+
+        feather.replace();
+      </script>
+
+      <%- include('../partials/footer') %>

@@ -58,7 +58,7 @@
 
         <!-- Users -->
         <li class="sidebar-item">
-          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute === '/store/admin/users' ? 'active bg-body' : '' %>"
+          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute.startsWith('/store/admin/users') ? 'active bg-body' : '' %>"
             href="/store/admin/users" aria-expanded="false">
             <i data-feather="users" class="feather-icon"></i>
             <span class="hide-menu">Users</span>
@@ -67,7 +67,7 @@
 
         <!-- Products -->
         <li class="sidebar-item">
-          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute === '/store/admin/products' ? 'active bg-body' : '' %>"
+          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute.startsWith('/store/admin/products') ? 'active bg-body' : '' %>"
             href="/store/admin/products" aria-expanded="false">
             <i data-feather="shopping-bag" class="feather-icon"></i>
             <span class="hide-menu">Products</span>
@@ -76,7 +76,7 @@
 
         <!-- Orders -->
         <li class="sidebar-item">
-          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute === '/store/admin/orders' ? 'active bg-body' : '' %>"
+          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute.startsWith('/store/admin/orders') ? 'active bg-body' : '' %>"
             href="/store/admin/orders" aria-expanded="false">
             <i data-feather="shopping-cart" class="feather-icon"></i>
             <span class="hide-menu">Orders</span>
@@ -85,7 +85,7 @@
 
         <!-- Categories -->
         <li class="sidebar-item">
-          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute === '/store/admin/categories' ? 'active bg-body' : '' %>"
+          <a class="sidebar-link waves-effect waves-dark sidebar-link <%= locals.currentRoute.startsWith('/store/admin/categories') ? 'active bg-body' : '' %>"
             href="/store/admin/categories" aria-expanded="false">
             <i data-feather="grid" class="feather-icon"></i>
             <span class="hide-menu">Categories</span>
