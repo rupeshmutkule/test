@@ -89,7 +89,7 @@ export default function Header() {
         .nh-inner {
           max-width: 1360px;
           margin: 0 auto;
-          height: 74px;
+          height: 84px;
           padding: 0 24px;
           display: grid;
           grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -122,8 +122,8 @@ export default function Header() {
 
         .nh-logo-image {
           width: auto;
-          height: 44px;
-          max-width: 220px;
+          height: 64px;
+          max-width: 280px;
           object-fit: contain;
         }
 
@@ -504,7 +504,7 @@ export default function Header() {
         @media (max-width: 991px) {
           .nh-inner {
             grid-template-columns: auto minmax(0, 1fr) auto;
-            height: 64px;
+            height: 72px;
             padding: 0 12px;
             gap: 10px;
           }
@@ -534,8 +534,8 @@ export default function Header() {
           }
 
           .nh-logo-image {
-            height: 36px;
-            max-width: min(190px, 100%);
+            height: 52px;
+            max-width: min(240px, 100%);
           }
 
           .nh-account-link,
@@ -551,14 +551,14 @@ export default function Header() {
 
         @media (max-width: 575px) {
           .nh-inner {
-            height: 58px;
+            height: 64px;
             padding: 0 10px;
             gap: 8px;
           }
 
           .nh-logo-image {
-            height: 30px;
-            max-width: 150px;
+            height: 44px;
+            max-width: 200px;
           }
 
           .nh-cart-dropdown {
@@ -604,10 +604,10 @@ export default function Header() {
 
           <Link href="/" className="nh-logo-link" onClick={closeOverlays}>
             <Image
-              src="/store/images/okab_ecommerce_logo.png"
+              src="/store/images/logo-white.png"
               alt="Okab Online Store"
-              width={220}
-              height={44}
+              width={280}
+              height={64}
               priority
               className="nh-logo-image"
             />
@@ -743,7 +743,7 @@ export default function Header() {
       <aside className={`nh-drawer${mobileMenuOpen ? " open" : ""}`} aria-hidden={!mobileMenuOpen}>
         <div className="nh-drawer-head">
           <Image
-            src="/store/images/okab_ecommerce_logo.png"
+            src="/store/images/logo-white.png"
             alt="Okab Online Store"
             width={160}
             height={34}
