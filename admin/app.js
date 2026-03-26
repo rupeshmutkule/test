@@ -32,6 +32,11 @@ app.use('/store/admin', session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
+app.use((req, res, next) => {
+  res.locals.currentRoute = req.originalUrl;
+  next();
+});
+
 // ✅ basePath variable for EJS templates
 app.locals.basePath = process.env.BASE_PATH || '';
 
