@@ -40,7 +40,7 @@ $(function () {
         },
       },
     },
-    colors: ["#4fc3f7", "#2962ff"],
+    colors: ["#4fc3f7", "#884531"],
     dataLabels: {
       enabled: false,
     },
@@ -141,7 +141,7 @@ $(function () {
         },
       },
     },
-    colors: ["#eff3f7", "#fb8c00", "#3699ff", "#2962ff"],
+    colors: ["#eff3f7", "#fb8c00", "#3699ff", "#884531"],
     tooltip: {
       show: true,
       fillSeriesColor: false,
@@ -371,7 +371,7 @@ $(function () {
     fill: {
       type: "solid",
       opacity: 1,
-      colors: ["#2962ff"],
+      colors: ["#884531"],
     },
     grid: {
       show: false,
@@ -379,12 +379,12 @@ $(function () {
     stroke: {
       curve: "smooth",
       lineCap: "square",
-      colors: ["#2962ff"],
+      colors: ["#884531"],
       width: 3,
     },
     markers: {
       size: 3,
-      colors: ["#2962ff"],
+      colors: ["#884531"],
       strokeColors: "transparent",
       shape: "square",
       hover: {
